@@ -1,0 +1,168 @@
+/**
+ * 
+ */
+package finalProject;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+
+import javax.naming.*;
+import javax.swing.*;
+
+import java.sql.*;
+
+import javax.sql.*;
+/**
+ * @author Alberto Diaz
+ *
+ */
+public class RcM extends JFrame implements ActionListener{
+	private JLabel paperLabel;
+	private JLabel glassLabel;
+	private JLabel alumLabel;
+	private JLabel paperTotal;
+	private JLabel glassTotal;
+	private JLabel alumTotal;
+	private JButton paperButton;
+	private JButton glassButton;
+	private JButton alumButton;	
+
+	public RcM() {
+		super("Recycling Machine");		
+		
+		Container container = getContentPane();
+		// set the layout
+		GroupLayout layout = new GroupLayout(container);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+	    container.setLayout(layout);
+	    
+	    JLabel type = new JLabel("Type");
+	    JLabel weight = new JLabel("Total Weight");
+	    JLabel amount = new JLabel("Total Price");
+	    
+	    JLabel paper = new JLabel("Paper: ");
+	    JLabel glass = new JLabel("Glass: ");
+	    JLabel alum = new JLabel("Aluminum: ");
+	    
+	    paperLabel = new JLabel("0");
+	    glassLabel = new JLabel("0");
+	    alumLabel = new JLabel("0");
+
+	    paperTotal = new JLabel("0");
+	    glassTotal = new JLabel("0");
+	    alumTotal = new JLabel("0");
+	    
+	    paperButton = new JButton("Paper");
+	    glassButton = new JButton("Glass");
+	    alumButton = new JButton("Aluminum");
+	    
+	    paperButton.addActionListener(this);
+	    glassButton.addActionListener(this);
+	    alumButton.addActionListener(this);
+	    
+	    layout.setHorizontalGroup(
+	    		layout.createSequentialGroup()
+			    	.addGroup(layout.createParallelGroup()
+			    		.addComponent(type)
+			    		.addComponent(paper)
+			    		.addComponent(glass)
+			    		.addComponent(alum)
+			    		.addComponent(paperButton)
+			    	)
+			    	.addGroup(layout.createParallelGroup()
+			    		.addComponent(weight)
+			    		.addComponent(paperLabel)
+			    		.addComponent(glassLabel)
+			    		.addComponent(alumLabel)
+			    		.addComponent(glassButton)
+			    	)
+			    	.addGroup(layout.createParallelGroup()
+			    		.addComponent(amount)
+			    		.addComponent(paperTotal)
+			    		.addComponent(glassTotal)
+			    		.addComponent(alumTotal)
+			    		.addComponent(alumButton)
+			    	)
+	    );
+	    
+	    layout.setVerticalGroup(
+	    		layout.createSequentialGroup()
+	    			.addGroup(layout.createParallelGroup()
+	    					.addComponent(type)
+	    					.addComponent(weight)
+	    					.addComponent(amount)
+	    			)
+	    			.addGroup(layout.createParallelGroup()
+	    					.addComponent(paper)
+	    					.addComponent(paperLabel)
+	    					.addComponent(paperTotal)
+	    			)
+				    .addGroup(layout.createParallelGroup()
+	    					.addComponent(glass)
+	    					.addComponent(glassLabel)
+	    					.addComponent(glassTotal)
+	    			)
+	    			.addGroup(layout.createParallelGroup()
+	    					.addComponent(alum)
+	    					.addComponent(alumLabel)
+	    					.addComponent(alumTotal)
+	    			)
+	    			.addGroup(layout.createParallelGroup()
+	    					.addComponent(paperButton)
+	    					.addComponent(glassButton)
+	    					.addComponent(alumButton)
+	    			)
+	    );
+		
+		//create 
+		setSize(400,200);
+		setLocationRelativeTo(null);
+	    setVisible( true );
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		RcM application = new RcM();
+		
+		application.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		int weight;
+		
+		try {
+			weight = Integer.parseInt((String)JOptionPane.showInputDialog(this, 
+					"Enter Weight",
+					"Recycle Item", 
+					JOptionPane.INFORMATION_MESSAGE, 
+					null, 
+					null,
+					null));
+			
+		} catch (Exception e2) {			
+			weight = 0;
+			
+			JOptionPane.showMessageDialog(this, "This is not a number", "Error", JOptionPane.ERROR_MESSAGE);
+		}
+		
+		switch (e.getActionCommand().toLowerCase().trim()) {
+		case "paper":
+			paperLabel.setText(weight+"");
+			break;
+
+		default:
+			System.out.println("None of the above" + e.getActionCommand());
+			break;
+		}
+	}
+
+}

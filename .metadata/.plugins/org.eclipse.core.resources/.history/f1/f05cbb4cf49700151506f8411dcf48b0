@@ -1,0 +1,31 @@
+/**
+ * 
+ */
+package finalProject;
+
+import java.awt.GraphicsConfiguration;
+import java.awt.HeadlessException;
+
+import javax.swing.JFrame;
+
+/**
+ * @author Alberto Diaz
+ *
+ */
+public class RMoS extends JFrame {
+
+	public RMoS() {
+		super("Recycling Monitoring Station");
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		RMoS application = new RMoS();
+
+		application.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+	}
+
+}
