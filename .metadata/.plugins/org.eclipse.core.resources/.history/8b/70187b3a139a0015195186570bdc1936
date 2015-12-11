@@ -1,0 +1,181 @@
+/**
+ * 
+ */
+package finalProject;
+
+import java.awt.*;
+import java.util.*;
+
+import javax.swing.*;
+
+import java.sql.*;
+
+/**
+ * @author Alberto Diaz
+ *
+ */
+
+class Graph extends JPanel implements Runnable {
+	private StatGen sGen = new StatGen();
+	private Map<String, Data> data;
+	private DefaultListModel<RcM> model;
+	private boolean ok = false;
+	private boolean firstTime = true;
+
+	public Graph(DefaultListModel<RcM> model)
+	{
+		this.model = model;
+		setPreferredSize(new Dimension(500,500));
+	}
+	
+	/**
+	 * Add new bar to chart
+	 * @param color color to display bar
+	 * @param value size of bar
+	 */
+	
+    public void displayGraph(){
+    	ok = true;
+    	repaint();
+    }
+    
+    public void displayError(){
+    	ok = false;
+    	repaint();
+    }
+	private void drawBarGraph(Graphics2D g)
+	{
+		// determine longest bar
+
+		int max = Integer.MIN_VALUE;
+		System.out.println(data.values());
+		for (Data temp : data.values())
+		{
+			max = Math.max(max, temp.getAmount());
+		}
+		// paint bars
+
+		int width = (getWidth() / data.size() - 10);
+		
+		int x = 1;
+		for (String color : data.keySet())
+		{
+			Data value = data.get(color);
+			int height = (int)((getHeight()-20) * ((double)value.getAmount() / max));
+			System.out.println("max " + max + " height " + height + " width " + width + ", bar size " + data.size());
+            
+			g.setColor(Color.red);
+			g.fillRect(x + 5, getHeight() - height, width, height);
+			g.setColor(Color.black);
+			Font font = new Font("Verdana",Font.PLAIN,20);
+			g.setFont(font);
+	        g.drawString( color + " - " + value.getAmount() + " lbs.", x + (width - (g.getFontMetrics(font)).stringWidth(color + " - " + value.getAmount() + " lbs."))/2, getHeight() - height - 2);	
+	        System.out.println(data.size());
+			g.drawRect(x + 5, getHeight() - height, width, height);
+			x += (width + 2);
+		}
+	}
+	@Override
+	protected void paintComponent(Graphics gp)
+	{ 
+		super.paintComponent(gp);
+         
+         // Cast the graphics objects to Graphics2D
+         
+         Graphics2D g = (Graphics2D) gp;
+		 g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
+         g.setStroke(new BasicStroke(2.0f));
+		
+		 if (ok)
+			drawBarGraph(g);
+	}
+
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+      try{
+          while (true){
+             data = sGen.generateData(model);
+             displayGraph();
+             try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+          }
+        }
+      finally{}
+	}
+	
+}
+
+class Data{
+	String status;
+	double cash;
+	double lifeCash;
+	int capacity;
+	int weight;
+	int lifeWeight = 0;
+	int itemCount;
+	
+	public Data (){
+		this.status = "Active";
+		this.cash = 1000.00;
+		this.capacity = 2000;
+		this.weight = 0;
+		this.itemCount = 0;
+	}
+	public int getAmount() {
+		return this.lifeWeight;
+	}
+	public boolean updateCash(double total){
+		double ogCash = this.cash;
+		this.cash -= total;
+		
+		if (this.cash < 0) {
+			this.cash = ogCash;
+			return false;
+		}
+		else 
+			return true;
+	}
+	public boolean updateWeight(int weight) {
+		int ogWt = this.weight;
+		this.weight = this.weight + weight;
+		
+		if (this.weight > this.capacity) {
+			this.weight = ogWt;
+			this.status = "Full";
+			return false;
+		}
+		else {
+			this.status = "Active";
+			this.lifeWeight += weight;
+			this.itemCount++;
+			return true;
+		}
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "Status: "+ this.status + "\nCurrent Cash: " + this.cash +"\nCurrent Weight: " + this.weight + "\nNo. of Items: " + this.itemCount;
+	}
+}
+
+public class StatGen {
+	
+	private Map<String, Data> data = new LinkedHashMap<String, Data>();
+	
+	public Map<String, Data> generateData(DefaultListModel<RcM> model) {
+		data.clear();
+		for (int i = 0; i < model.getSize(); i++) {
+			String label = model.getElementAt(i).toString();
+			label = label.matches(/\d/);
+			data.put("RcM" + label, model.getElementAt(i).getData());
+		}
+		return data;
+	}
+}

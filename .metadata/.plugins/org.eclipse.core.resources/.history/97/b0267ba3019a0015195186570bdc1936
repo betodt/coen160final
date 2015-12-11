@@ -1,0 +1,150 @@
+/**
+ * 
+ */
+package finalProject;
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import java.sql.*;
+
+/**
+ * @author Alberto Diaz
+ *
+ */
+public class RMoS extends JFrame implements ActionListener, ListSelectionListener {
+	private JButton addRcm;
+	private JButton removeRcm;
+	private JTextArea status;
+	private DefaultListModel<RcM> model;
+	private JList rcms;
+	ArrayList<Integer> rcmList = new ArrayList<Integer>();
+
+	public RMoS() {
+		super("EcoRe Recycling Monitoring Station");
+		
+		Container container = getContentPane();
+		// set the layout
+		GroupLayout layout = new GroupLayout(container);
+		layout.setAutoCreateGaps(true);
+		layout.setAutoCreateContainerGaps(true);
+	    container.setLayout(layout);
+	    
+		addRcm = new JButton("Add RcM");
+	    addRcm.addActionListener(this);
+	    
+	    removeRcm = new JButton("Remove RcM");
+	    removeRcm.addActionListener(this);
+	    
+	    status = new JTextArea(10, 20);
+	    status.setEditable(false);
+	    
+	    for (int i = 0; i < 10; i++) {
+	    	rcmList.add(i + 1);
+	    }
+	    
+	    model = new DefaultListModel();
+	    rcms = new JList(model); //data has type Object[]
+	    ListSelectionModel lsm = rcms.getSelectionModel();
+	    lsm.addListSelectionListener(this);
+	    rcms.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	    rcms.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+	    rcms.setVisibleRowCount(-1);
+	    
+	    JScrollPane rcmsPane = new JScrollPane(rcms);
+	    rcmsPane.setPreferredSize(new Dimension(250, 80));
+	    
+	    layout.setHorizontalGroup(layout.createSequentialGroup()
+	    		.addGroup(layout.createParallelGroup()
+	    				.addGroup(layout.createSequentialGroup()
+		    				.addComponent(addRcm)
+		    				.addComponent(removeRcm)
+	    				)
+	    				.addComponent(rcmsPane)
+	    				.addComponent(status)
+	    		)
+	    );
+	     
+	    layout.setVerticalGroup(layout.createSequentialGroup()
+	    		.addGroup(layout.createParallelGroup()
+	    			.addComponent(addRcm)
+	    			.addComponent(removeRcm)
+	    		)
+	    		.addGroup(layout.createParallelGroup()
+	    				.addComponent(rcmsPane)
+	    		)
+	    		.addGroup(layout.createParallelGroup()
+	    				.addComponent(status)
+	    		)
+	    );
+		
+		//create 
+		setSize(300,500);
+		setLocationRelativeTo(null);
+	    setVisible( true );
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		RMoS application = new RMoS();
+
+		application.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		if(e.getActionCommand().equalsIgnoreCase("add rcm")){
+			if(model.size() < 10) {
+				removeRcm.setEnabled(true);
+				
+				RcM rcm = new RcM("EcoRe Recycling Machine " + (rcmList.get(0)));
+				rcm.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+				
+				rcmList.remove(0);
+				model.addElement(rcm);
+			}
+			else 
+				addRcm.setEnabled(false);
+		}
+		
+		if(e.getActionCommand().equalsIgnoreCase("remove rcm")){
+			if(model.size() > 0) {
+				addRcm.setEnabled(true);
+				try {
+					model.getElementAt(rcms.getSelectedIndex()).dispose();
+					rcmList.add(rcms.getSelectedIndex() + 1);
+					model.remove(rcms.getSelectedIndex());
+				} catch (Exception e2) {
+					// TODO: handle exception
+					System.out.println("Select something!");
+				}
+			}
+			else {
+				removeRcm.setEnabled(false);
+			}
+		}
+		
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		// TODO Auto-generated method stub
+		if(!e.getValueIsAdjusting()) {
+			RcM rcm = model.get(rcms.getSelectedIndex());
+			status.setText(rcm.getData());
+			
+		}
+	}
+
+}
